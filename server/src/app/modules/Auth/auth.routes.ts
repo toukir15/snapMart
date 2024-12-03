@@ -1,14 +1,9 @@
-// import express from 'express';
-// import { AuthController } from './auth.controller';
-// import auth from '../../middlewares/auth';
-// import { UserRole } from '@prisma/client';
+import express from "express";
+import { AuthController } from "./auth.controller";
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.post(
-//     '/login',
-//     AuthController.loginUser
-// );
+router.post("/login", AuthController.loginUser);
 
 // router.post(
 //     '/refresh-token',
@@ -36,4 +31,4 @@
 //     AuthController.resetPassword
 // )
 
-// export const AuthRoutes = router;
+export const AuthRoutes = router;
