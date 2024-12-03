@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,8 +18,6 @@ model User {
   admin     Admin?
   vendor    Vendor?
   customer  Customer?
-  Shop      Shop?      @relation(fields: [shopId], references: [id])
-  shopId    String?
 
   @@map("users")
 }
@@ -54,28 +46,52 @@ model Vendor {
   updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [email], references: [email])
 
-  shop Shop?
+  shop  Shop?
+  Cupon Cupon?
 
   @@map("vendors")
 }
 
 model Customer {
-  id           String       @id @default(uuid())
+  id           String   @id @default(uuid())
   name         String
-  email        String       @unique
+  email        String   @unique
+  cartId       String?
   profilePhoto String?
-  isDeleted    Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  user         User         @relation(fields: [email], references: [email])
-  ShopReview   ShopReview[]
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [email], references: [email])
+  review       Review[]
+  cart         Cart[]
+  order        Order?
+  Follow       Follow?
 
   @@map("customers")
 }
 
+model Cupon {
+  id                 String   @id @default(uuid())
+  code               String
+  discountPercentage Int
+  validFrom          DateTime @default(now())
+  validUntil         DateTime
+
+  vendorId String @unique
+  vendor   Vendor @relation(fields: [vendorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("madical_reports")
+}
+
 model Shop {
-  id          String   @id @default(uuid())
-  vendorId    String   @unique
+  id String @id @default(uuid())
+
+  vendorId String @unique
+  vendor   Vendor @relation(fields: [vendorId], references: [id])
+
   name        String
   logo        String?
   description String
@@ -83,31 +99,47 @@ model Shop {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  vendor     Vendor       @relation(fields: [vendorId], references: [id])
-  products   Product[]
-  User       User[]
-  ShopReview ShopReview[]
+  products Product[]
+  review   Review[]
+  order    Order?
+  Follow   Follow?
+  Cart     Cart[]
 
   @@map("shops")
 }
 
-model ShopReview {
+model Follow {
+  id String @id @default(uuid())
+
+  customerId String   @unique
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  shopId String @unique
+  shop   Shop   @relation(fields: [shopId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("follows")
+}
+
+model Review {
   id         String   @id @default(uuid())
-  shopId     String?
+  customerId String
+  shopId     String
   rating     Int
   comment    String
-  customerId String
   createdAt  DateTime @default(now())
 
   customer Customer @relation(fields: [customerId], references: [id])
   shop     Shop?    @relation(fields: [shopId], references: [id])
 
-  @@map("shop_reviews")
+  @@map("reviews")
 }
 
 model Product {
   id             String   @id @unique @default(uuid())
-  shopId         String?
+  shopId         String
   name           String
   price          Int
   categoryId     String
@@ -118,8 +150,10 @@ model Product {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  category Category @relation(fields: [categoryId], references: [id])
-  Shop     Shop?    @relation(fields: [shopId], references: [id])
+  category  Category   @relation(fields: [categoryId], references: [id])
+  shop      Shop?      @relation(fields: [shopId], references: [id])
+  cartItem  CartItem?
+  orderItem OrderItem?
 
   @@map("products")
 }
@@ -135,159 +169,66 @@ model Category {
   @@map("categories")
 }
 
-// model DoctorSpecialties {
-//   specialitiesId String
-//   specialities   Specialties @relation(fields: [specialitiesId], references: [id])
+model Cart {
+  id         String   @id @default(uuid())
+  customerId String
+  shopId     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-//   doctorId String
-//   doctor   Doctor @relation(fields: [doctorId], references: [id])
+  customer Customer  @relation(fields: [customerId], references: [id])
+  shop     Shop      @relation(fields: [shopId], references: [id])
+  CartItem CartItem?
 
-//   @@id([specialitiesId, doctorId])
-//   @@map("doctor_specialties")
-// }
+  @@map("carts")
+}
 
-// model PatientHealthData {
-//   id                  String        @id @default(uuid())
-//   patientId           String        @unique
-//   patient             Patient       @relation(fields: [patientId], references: [id])
-//   gender              Gender
-//   dateOfBirth         String
-//   bloodGroup          BloodGroup
-//   hasAllergies        Boolean?      @default(false)
-//   hasDiabetes         Boolean?      @default(false)
-//   height              String
-//   weight              String
-//   smokingStatus       Boolean?      @default(false)
-//   dietaryPreferences  String?
-//   pregnancyStatus     Boolean?      @default(false)
-//   mentalHealthHistory String?
-//   immunizationStatus  String?
-//   hasPastSurgeries    Boolean?      @default(false)
-//   recentAnxiety       Boolean?      @default(false)
-//   recentDepression    Boolean?      @default(false)
-//   maritalStatus       MaritalStatus @default(UNMARRIED)
-//   createdAt           DateTime      @default(now())
-//   updatedAt           DateTime      @updatedAt
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String   @unique
+  productId String   @unique
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-//   @@map("patient_health_datas")
-// }
+  cart       Cart    @relation(fields: [cartId], references: [id])
+  product    Product @relation(fields: [productId], references: [id])
+  customerId String?
 
-// model MedicalReport {
-//   id         String   @id @default(uuid())
-//   patientId  String
-//   patient    Patient  @relation(fields: [patientId], references: [id])
-//   reportName String
-//   reportLink String
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt
+  @@map("cartItems")
+}
 
-//   @@map("madical_reports")
-// }
+model Order {
+  id         String   @id @default(uuid())
+  customerId String   @unique
+  customer   Customer @relation(fields: [customerId], references: [id])
 
-// model Schedule {
-//   id              String            @id @default(uuid())
-//   startDateTime   DateTime
-//   endDateTime     DateTime
-//   createdAt       DateTime          @default(now())
-//   updatedAt       DateTime          @updatedAt
-//   doctorSchedules DoctorSchedules[]
-//   appointment     Appointment?
+  shopId String @unique
+  shop   Shop   @relation(fields: [shopId], references: [id])
 
-//   @@map("schedules")
-// }
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  orderItem OrderItem?
 
-// model DoctorSchedules {
-//   doctorId String
-//   doctor   Doctor @relation(fields: [doctorId], references: [id])
+  @@map("orders")
+}
 
-//   scheduleId String
-//   schedule   Schedule @relation(fields: [scheduleId], references: [id])
+model OrderItem {
+  id      String @id @default(uuid())
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id])
 
-//   isBooked Boolean @default(false)
+  productId String  @unique
+  product   Product @relation(fields: [productId], references: [id])
 
-//   appointmentId String?      @unique
-//   appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  quantity  Int
+  price     Int
+  discount  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-//   @@id([doctorId, scheduleId])
-//   @@map("doctor_schedules")
-// }
-
-// model Appointment {
-//   id        String  @id @default(uuid())
-//   patientId String
-//   patient   Patient @relation(fields: [patientId], references: [id])
-
-//   doctorId String
-//   doctor   Doctor @relation(fields: [doctorId], references: [id])
-
-//   scheduleId String   @unique
-//   schedule   Schedule @relation(fields: [scheduleId], references: [id])
-
-//   videoCallingId  String
-//   status          AppointmentStatus @default(SCHEDULED)
-//   paymentStatus   PaymentStatus     @default(UNPAID)
-//   createdAt       DateTime          @default(now())
-//   updatedAt       DateTime          @updatedAt
-//   doctorSchedules DoctorSchedules?
-//   payment         Payment?
-//   prescription    Prescription?
-//   review          Review?
-
-//   @@map("appointments")
-// }
-
-// model Payment {
-//   id            String      @id @default(uuid())
-//   appointmentId String      @unique
-//   appointment   Appointment @relation(fields: [appointmentId], references: [id])
-
-//   amount             Float
-//   transactionId      String        @unique
-//   status             PaymentStatus @default(UNPAID)
-//   paymentGatewayData Json?
-//   createdAt          DateTime      @default(now())
-//   updatedAt          DateTime      @updatedAt
-
-//   @@map("payments")
-// }
-
-// model Prescription {
-//   id            String      @id @default(uuid())
-//   appointmentId String      @unique
-//   appointment   Appointment @relation(fields: [appointmentId], references: [id])
-
-//   doctorId String
-//   doctor   Doctor @relation(fields: [doctorId], references: [id])
-
-//   patientId String
-//   patient   Patient @relation(fields: [patientId], references: [id])
-
-//   instructions String
-//   followUpDate DateTime?
-//   createdAt    DateTime  @default(now())
-//   updatedAt    DateTime  @updatedAt
-
-//   @@map("prescriptions")
-// }
-
-// model Review {
-//   id        String  @id @default(uuid())
-//   patientId String
-//   patient   Patient @relation(fields: [patientId], references: [id])
-
-//   doctorId String
-//   doctor   Doctor @relation(fields: [doctorId], references: [id])
-
-//   appointmentId String      @unique
-//   appointment   Appointment @relation(fields: [appointmentId], references: [id])
-
-//   rating    Float
-//   comment   String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   @@map("reviews")
-// }
+  @@map("order_items")
+}
 
 enum UserRole {
   ADMIN
@@ -300,36 +241,3 @@ enum UserStatus {
   BLOCKED
   DELETED
 }
-
-// enum Gender {
-//   MALE
-//   FEMALE
-// }
-
-// enum BloodGroup {
-//   A_POSITIVE
-//   B_POSITIVE
-//   O_POSITIVE
-//   AB_POSITIVE
-//   A_NEGATIVE
-//   B_NEGATIVE
-//   O_NEGATIVE
-//   AB_NEGATIVE
-// }
-
-// enum MaritalStatus {
-//   MARRIED
-//   UNMARRIED
-// }
-
-// enum AppointmentStatus {
-//   SCHEDULED
-//   INPROGRESS
-//   COMPLETED
-//   CANCELED
-// }
-
-// enum PaymentStatus {
-//   PAID
-//   UNPAID
-// }
