@@ -1,8 +1,19 @@
-import { Admin, UserRole } from "@prisma/client";
+import { Admin, UserRole, UserStatus } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { IFile } from "../../interfaces/file";
 import { Request } from "express";
 import prisma from "../../../shared/prisma";
+
+const getUsers = async () => {
+  const result = await prisma.user.findMany({
+    where: {
+      role: {
+        not: "ADMIN",
+      },
+    },
+  });
+  return result;
+};
 
 const createAdmin = async (req: Request): Promise<Admin> => {
   const file = req.file as IFile;
@@ -57,7 +68,6 @@ const createVendor = async (req: Request) => {
     const createVendorData = await transactionClient.vendor.create({
       data: vendorData,
     });
-
     return createVendorData;
   });
 
@@ -85,13 +95,44 @@ const createCustomer = async (req: Request) => {
       profilePhoto: file.path,
     };
 
-    const createdPatientData = await transactionClient.customer.create({
+    const createCustomerData = await transactionClient.customer.create({
       data: customerData,
     });
 
-    return createdPatientData;
+    return createCustomerData;
   });
 
+  return result;
+};
+
+const updateStatus = async (id: string, newStatus: UserStatus) => {
+  await prisma.user.findFirstOrThrow({
+    where: {
+      id: id,
+    },
+  });
+
+  // If user exists, proceed to update
+  const result = await prisma.user.update({
+    where: {
+      id: id,
+    },
+    data: {
+      status: newStatus,
+    },
+  });
+
+  return result;
+};
+
+const deleteUsers = async () => {
+  // Delete records in dependent tables
+  await prisma.customer.deleteMany();
+  await prisma.vendor.deleteMany();
+  await prisma.admin.deleteMany();
+
+  // Now delete users
+  const result = await prisma.user.deleteMany();
   return result;
 };
 
@@ -282,6 +323,9 @@ export const userService = {
   createAdmin,
   createVendor,
   createCustomer,
+  deleteUsers,
+  getUsers,
+  updateStatus,
   //   createDoctor,
   //   createPatient,
   //   getAllFromDB,

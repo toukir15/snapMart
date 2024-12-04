@@ -7,17 +7,7 @@ import { multerUpload } from "../../../helpars/multerUpload";
 
 const router = express.Router();
 
-// router.get(
-//   "/",
-//   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-//   userController.getAllFromDB
-// );
-
-// router.get(
-//   "/me",
-//   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
-//   userController.getMyProfile
-// );
+router.get("/", auth(UserRole.ADMIN), userController.getUsers);
 
 router.post(
   "/create-admin",
@@ -47,22 +37,12 @@ router.post(
     return userController.createCustomer(req, res, next);
   }
 );
+router.delete("/", userController.deleteUsers);
 
-// router.patch(
-//   "/:id/status",
-//   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-//   validateRequest(userValidation.updateStatus),
-//   userController.changeProfileStatus
-// );
-
-// router.patch(
-//   "/update-my-profile",
-//   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
-//   fileUploader.upload.single("file"),
-//   (req: Request, res: Response, next: NextFunction) => {
-//     req.body = JSON.parse(req.body.data);
-//     return userController.updateMyProfie(req, res, next);
-//   }
-// );
+router.patch(
+  "/change-status/:userId",
+  auth(UserRole.ADMIN),
+  userController.updateStatus
+);
 
 export const userRoutes = router;

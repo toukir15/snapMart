@@ -4,6 +4,15 @@ import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { userService } from "./user.sevice";
 
+const getUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.getUsers();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrive users successfuly!",
+    data: result,
+  });
+});
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createAdmin(req);
   sendResponse(res, {
@@ -26,6 +35,28 @@ const createVendor = catchAsync(async (req: Request, res: Response) => {
 
 const createCustomer = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createCustomer(req);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Customer Created successfuly!",
+    data: result,
+  });
+});
+
+const updateStatus = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  const newStatus = req.body.status;
+  const result = await userService.updateStatus(userId, newStatus);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Customer Created successfuly!",
+    data: result,
+  });
+});
+
+const deleteUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.deleteUsers();
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -95,6 +126,9 @@ export const userController = {
   createAdmin,
   createVendor,
   createCustomer,
+  deleteUsers,
+  getUsers,
+  updateStatus,
   // createPatient,
   // getAllFromDB,
   // changeProfileStatus,
