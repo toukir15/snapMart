@@ -2,6 +2,10 @@ import { Request } from "express";
 import prisma from "../../../shared/prisma";
 import { IFile } from "../../interfaces/file";
 
+const getShop = () => {
+  console.log("object");
+};
+
 const createShop = async (req: Request) => {
   const file = req.file as IFile;
 
@@ -49,4 +53,5 @@ const blackListShop = async (shopId: string) => {
 export const ShopServices = {
   createShop,
   blackListShop,
+  getShop,
 };

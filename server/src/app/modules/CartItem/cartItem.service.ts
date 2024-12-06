@@ -1,27 +1,30 @@
-import { CartItem } from "@prisma/client";
+import { User } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 
-const createCartItem = async (payload: CartItem) => {
-  const cartId = payload.cartId;
-  const productId = payload.productId;
-
-  // Check if the vendor already has a shop
-  const existingCartItem = await prisma.cartItem.findFirst({
+const getCartItems = async (payload: Partial<User>) => {
+  const customerData = await prisma.customer.findUnique({
     where: {
-      cartId: cartId,
-      productId: productId,
+      email: payload.email,
+    },
+  });
+  console.log(customerData);
+  const findCustomerCart = await prisma.cart.findFirst({
+    where: {
+      customerId: customerData?.id,
     },
   });
 
-  if (existingCartItem) {
-    throw new Error("Cart item already exist!");
-  }
-  const result = await prisma.cartItem.create({
-    data: payload,
+  const result = await prisma.cartItem.findMany({
+    where: { cartId: findCustomerCart?.id },
+    include: {
+      product: {
+        select: { name: true, images: true, price: true, inventoryCount: true },
+      },
+    },
   });
   return result;
 };
 
 export const CartItemServices = {
-  createCartItem,
+  getCartItems,
 };

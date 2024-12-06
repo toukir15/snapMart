@@ -3,6 +3,21 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { ProductService } from "./product.service";
+import { pick } from "../../../shared/pick";
+
+const getProducts = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, ["searchTerm", "category", "price"]);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const result = await ProductService.getProducts(filters, options);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrive products successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const result = await ProductService.createProduct(req);
@@ -15,6 +30,34 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateProduct = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProductService.updateProduct(
+    req.params.productId,
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Update product successfully",
+    data: result,
+  });
+});
+
+const deleteProduct = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProductService.deleteProduct(req.params.productId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Delete product successfully",
+    data: result,
+  });
+});
+
 export const ProductController = {
   createProduct,
+  updateProduct,
+  deleteProduct,
+  getProducts,
 };

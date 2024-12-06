@@ -1,19 +1,17 @@
-// import express from 'express'
-// import { ReviewController } from './review.controller';
-// import auth from '../../middlewares/auth';
-// import { UserRole } from '@prisma/client';
-// import validateRequest from '../../middlewares/validateRequest';
-// import { ReviewValidation } from './review.validation';
+import express from "express";
+import { ReviewControllers } from "./review.controller";
+import auth from "../../middlewares/auth";
+import { UserRole } from "@prisma/client";
 
-// const router = express.Router();
+const router = express.Router();
 
-// router.get('/', ReviewController.getAllFromDB);
+router.get(
+  "/",
+  auth(UserRole.CUSTOMER, UserRole.VENDOR, UserRole.ADMIN),
+  ReviewControllers.getReviews
+);
+router.post("/", auth(UserRole.CUSTOMER), ReviewControllers.createReview);
 
-// router.post(
-//     '/',
-//     auth(UserRole.PATIENT),
-//     validateRequest(ReviewValidation.create),
-//     ReviewController.insertIntoDB
-// );
+// router.post("/", auth(UserRole.CUSTOMER), ReviewController.insertIntoDB);
 
-// export const ReviewRoutes = router;
+export const ReviewRoutes = router;

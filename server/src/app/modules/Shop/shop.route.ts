@@ -6,15 +6,16 @@ import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
+router.get("/", auth(UserRole.CUSTOMER), ShopController.blackListShop);
 router.post(
   "/",
+  auth(UserRole.VENDOR),
   multerUpload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
     return ShopController.createShop(req, res, next);
   }
 );
-
 router.patch(
   "/black-list/:shopId",
   auth(UserRole.ADMIN),
