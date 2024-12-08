@@ -115,8 +115,10 @@ CREATE TABLE "products" (
     "shopId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
+    "isFlashSale" BOOLEAN NOT NULL DEFAULT false,
     "categoryId" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "ratting" INTEGER NOT NULL,
     "inventoryCount" INTEGER NOT NULL,
     "discount" INTEGER NOT NULL,
     "images" TEXT[],
@@ -155,7 +157,6 @@ CREATE TABLE "cart_items" (
     "quantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "customerId" TEXT,
 
     CONSTRAINT "cart_items_pkey" PRIMARY KEY ("id")
 );
@@ -213,13 +214,10 @@ CREATE UNIQUE INDEX "follows_shopId_key" ON "follows"("shopId");
 CREATE UNIQUE INDEX "products_id_key" ON "products"("id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "products_name_key" ON "products"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "categories_name_key" ON "categories"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "cart_items_cartId_key" ON "cart_items"("cartId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "cart_items_productId_key" ON "cart_items"("productId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "orders_customerId_key" ON "orders"("customerId");

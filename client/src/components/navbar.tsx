@@ -10,9 +10,7 @@ import {
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
-import { link as linkStyles } from "@nextui-org/theme";
 import NextLink from "next/link";
-import clsx from "clsx";
 import { LuShoppingCart } from "react-icons/lu";
 
 import { siteConfig } from "@/src/config/site";

@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Add this to your global CSS file (e.g., globals.css) */
+.ant-menu-item-selected {
+  background-color: #f85606 !important; /* Light green background */
+}
+
+.ant-menu {
+  background: #f7f7f7;
+}
+
+.ant-layout-sider-trigger {
+  background-color: #f7f7f7 !important; /* Set your desired background color */
+  color: #fff; /* Optional: Change the text/icon color */
+}
+
+/* Optional: Adjust hover effect for the collapse button */
+.ant-layout-sider-trigger:hover {
+  background-color: #555 !important; /* Set a different color on hover if needed */
+}
+
+.ant-spin-dot-item {
+  background-color: #f85606 !important; /* Tailwind's green-500 */
+}
+.ant-layout-content {
+  background-color: white;
+  margin: 0px !important;
+}
+
+.ant-layout-sider-children {
+  background-color: #f7f7f7;
+}
+
+.ant-layout-header {
+  background-color: #f7f7f7 !important;
+}
+.ant-menu-item-selected {
+  color: #ffffff !important; /* Make the text color white */
+}
+
+.ant-menu-item-selected .ant-menu-title-content {
+  color: #ffffff !important; /* Ensures nested text content is white */
+}
+
+.swiper-pagination {
+  display: none;
+}

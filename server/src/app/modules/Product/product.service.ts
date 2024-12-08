@@ -5,9 +5,11 @@ import { Prisma, Product } from "@prisma/client";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 
 const getProducts = async (params: any, options: any) => {
+  console.log("dsk");
   const andCondition: Prisma.ProductWhereInput[] = [];
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelper.calculatePagination(options);
+
   // Filter by search term
   if (params.searchTerm) {
     andCondition.push({
@@ -75,6 +77,91 @@ const getProducts = async (params: any, options: any) => {
     },
     data: result,
   };
+};
+
+const getFlashSaleProducts = async (params: any, options: any) => {
+  const andCondition: Prisma.ProductWhereInput[] = [
+    {
+      isFlashSale: true,
+    },
+  ];
+
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelper.calculatePagination(options);
+
+  // Filter by search term
+  if (params.searchTerm) {
+    andCondition.push({
+      name: {
+        contains: params.searchTerm,
+        mode: "insensitive",
+      },
+    });
+  }
+
+  // Filter by price range
+  if (params.price) {
+    const [minPrice, maxPrice] = params.price.split("-").map(Number);
+    if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+      andCondition.push({
+        price: {
+          gte: minPrice,
+          lte: maxPrice,
+        },
+      });
+    }
+  }
+
+  // Filter by category
+  if (params.category) {
+    andCondition.push({
+      category: {
+        name: {
+          equals: params.category,
+          mode: "insensitive",
+        },
+      },
+    });
+  }
+
+  const whereConditions: Prisma.ProductWhereInput = { AND: andCondition };
+
+  const result = await prisma.product.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: { [sortBy]: sortOrder },
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  const total = await prisma.product.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
+
+const getProduct = async (id: string) => {
+  const result = await prisma.product.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  return result;
 };
 
 const createProduct = async (req: Request) => {
@@ -145,4 +232,6 @@ export const ProductService = {
   updateProduct,
   deleteProduct,
   getProducts,
+  getFlashSaleProducts,
+  getProduct,
 };

@@ -15,7 +15,7 @@ import Image from "next/image";
 
 export default function Banner() {
   return (
-    <div className="w-full h-auto overflow-hidden mt-12">
+    <div className="w-full h-auto overflow-hidden">
       <Swiper
         className="mySwiper"
         modules={[Pagination]}

@@ -22,6 +22,18 @@ router.get(
   ProductController.getProducts
 );
 
+router.get(
+  "/flash-sale",
+  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
+  ProductController.getFlashSaleProducts
+);
+
+router.get(
+  "/:productId",
+  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
+  ProductController.getProduct
+);
+
 router.patch(
   "/:productId",
   auth(UserRole.VENDOR),

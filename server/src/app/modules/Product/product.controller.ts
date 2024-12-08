@@ -19,6 +19,32 @@ const getProducts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getFlashSaleProducts = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, ["searchTerm", "category", "price"]);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const result = await ProductService.getFlashSaleProducts(filters, options);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrive flash sale products successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const getProduct = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.productId;
+  const result = await ProductService.getProduct(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrive product successfully",
+    data: result,
+  });
+});
+
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const result = await ProductService.createProduct(req);
 
@@ -60,4 +86,6 @@ export const ProductController = {
   updateProduct,
   deleteProduct,
   getProducts,
+  getFlashSaleProducts,
+  getProduct,
 };
