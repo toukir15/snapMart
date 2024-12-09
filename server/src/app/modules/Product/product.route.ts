@@ -29,6 +29,18 @@ router.get(
 );
 
 router.get(
+  "/brand",
+  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
+  ProductController.getBrands
+);
+
+router.get(
+  "/suggested/:productId",
+  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
+  ProductController.getSuggestedProducts
+);
+
+router.get(
   "/:productId",
   auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
   ProductController.getProduct

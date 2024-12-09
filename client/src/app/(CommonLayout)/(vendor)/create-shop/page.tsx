@@ -30,7 +30,6 @@ export default function CreateShopPage() {
       .then((res) => res.json())
       .then((data) => {
         alert("Shop created successfully!");
-        console.log(data);
       })
       .catch((error) => {
         console.error("Error creating shop:", error);

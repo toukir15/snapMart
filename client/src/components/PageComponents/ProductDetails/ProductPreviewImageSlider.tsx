@@ -21,7 +21,8 @@ export default function ProductPreviewImageSlider({
   const { productStates } = useContext(
     ProductContext
   ) as IProductProviderValues;
-  const { setSelectedProductPreview } = productStates;
+  const { setSelectedProductPreview, selectedProductPreview } = productStates;
+
   return (
     <div className="mt-2">
       <Swiper
@@ -34,11 +35,14 @@ export default function ProductPreviewImageSlider({
         className="mySwiper"
       >
         {images.map((image, index) => {
+          if (!selectedProductPreview && index == 0) {
+            setSelectedProductPreview(image);
+          }
           return (
             <SwiperSlide>
               <div
                 onClick={() => setSelectedProductPreview(image)}
-                className="cursor-pointer border border-gray-500"
+                className={`cursor-pointer border  ${selectedProductPreview == image ? "border-orange-500" : "border-gray-500"}`}
               >
                 <div className="w-full h-[70px] relative">
                   <Image

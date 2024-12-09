@@ -1,10 +1,19 @@
 import { Category } from "@prisma/client";
 import prisma from "../../../shared/prisma";
-import { ICategory } from "./category.interface";
+import { Request } from "express";
 
-const createCategory = async (payload: ICategory) => {
+const getCategories = async () => {
+  const result = await prisma.category.findMany();
+  return result;
+};
+
+const createCategory = async (req: Request) => {
+  const data = {
+    name: JSON.parse(req.body.data).name,
+    image: req.file!.path,
+  };
   const result = await prisma.category.create({
-    data: payload,
+    data,
   });
   return result;
 };
@@ -32,4 +41,5 @@ export const CategoryServices = {
   createCategory,
   editCategory,
   deleteCategory,
+  getCategories,
 };

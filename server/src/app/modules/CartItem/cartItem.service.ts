@@ -7,7 +7,6 @@ const getCartItems = async (payload: Partial<User>) => {
       email: payload.email,
     },
   });
-  console.log(customerData);
   const findCustomerCart = await prisma.cart.findFirst({
     where: {
       customerId: customerData?.id,

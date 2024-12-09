@@ -6,7 +6,7 @@ import { ProductService } from "./product.service";
 import { pick } from "../../../shared/pick";
 
 const getProducts = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ["searchTerm", "category", "price"]);
+  const filters = pick(req.query, ["searchTerm", "category", "brand", "price"]);
   const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
   const result = await ProductService.getProducts(filters, options);
 
@@ -30,6 +30,30 @@ const getFlashSaleProducts = catchAsync(async (req: Request, res: Response) => {
     message: "Retrive flash sale products successfully",
     meta: result.meta,
     data: result.data,
+  });
+});
+
+const getSuggestedProducts = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProductService.getSuggestedProducts(
+    req.params.productId
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrive suggested products successfully",
+    data: result,
+  });
+});
+
+const getBrands = catchAsync(async (req: Request, res: Response) => {
+  const result = await ProductService.getBrands();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Retrive brands successfully",
+    data: result,
   });
 });
 
@@ -88,4 +112,6 @@ export const ProductController = {
   getProducts,
   getFlashSaleProducts,
   getProduct,
+  getSuggestedProducts,
+  getBrands,
 };

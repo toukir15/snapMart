@@ -5,7 +5,6 @@ import { Prisma, Product } from "@prisma/client";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 
 const getProducts = async (params: any, options: any) => {
-  console.log("dsk");
   const andCondition: Prisma.ProductWhereInput[] = [];
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelper.calculatePagination(options);
@@ -45,6 +44,16 @@ const getProducts = async (params: any, options: any) => {
           equals: params.category,
           mode: "insensitive",
         },
+      },
+    });
+  }
+
+  // Filter by category
+  if (params.brand) {
+    andCondition.push({
+      brand: {
+        equals: params.brand,
+        mode: "insensitive",
       },
     });
   }
@@ -155,10 +164,68 @@ const getFlashSaleProducts = async (params: any, options: any) => {
   };
 };
 
+const getSuggestedProducts = async (productId: string) => {
+  // Find the product to get its brand and price
+  const findProduct = await prisma.product.findUnique({
+    where: {
+      id: productId,
+    },
+  });
+
+  if (!findProduct) {
+    throw new Error("Product not found");
+  }
+
+  // Find products within the price range and same brand
+  const result = await prisma.product.findMany({
+    where: {
+      id: {
+        not: productId,
+      },
+      brand: findProduct.brand,
+      price: {
+        gte: findProduct.price - 200,
+        lte: findProduct.price + 200,
+      },
+    },
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    take: 6,
+  });
+
+  return result;
+};
+const getBrands = async () => {
+  // Fetch all unique brand names from the product table
+  const result = await prisma.product.findMany({
+    distinct: ["brand"], // Ensures only unique brand names are fetched
+    select: {
+      brand: true, // Select only the brand field
+    },
+  });
+
+  // Extract the brand names from the result
+  const brands = result.map((product) => product.brand);
+
+  return brands;
+};
+
 const getProduct = async (id: string) => {
   const result = await prisma.product.findUnique({
-    where: {
-      id: id,
+    where: { id },
+    include: {
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   });
   return result;
@@ -234,4 +301,6 @@ export const ProductService = {
   getProducts,
   getFlashSaleProducts,
   getProduct,
+  getSuggestedProducts,
+  getBrands,
 };

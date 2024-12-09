@@ -46,7 +46,6 @@ export default function EditShopPage() {
       .then((res) => res.json())
       .then((data) => {
         alert("Shop updated successfully!");
-        console.log(data);
       })
       .catch((error) => {
         console.error("Error updating shop:", error);

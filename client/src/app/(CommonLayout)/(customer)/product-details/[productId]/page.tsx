@@ -4,11 +4,15 @@ import flash3 from "../../../../../../public/flashSale/flash2.png";
 
 import Image from "next/image";
 import { Rating } from "@smastrom/react-rating";
-import { getProduct } from "@/src/services/product/query";
+import { getProduct, getSuggestedProduct } from "@/src/services/product/query";
 import ProductPreviewImage from "@/src/components/PageComponents/ProductDetails/ProductPreviewImage";
 import ProductPreviewImageSlider from "@/src/components/PageComponents/ProductDetails/ProductPreviewImageSlider";
 import ProductSize from "@/src/components/PageComponents/ProductDetails/ProductSize";
 import ProductCounter from "@/src/components/PageComponents/ProductDetails/ProductCounter";
+import { IProduct } from "@/src/types/product";
+import { calculateDiscounnt } from "@/src/utils/calculateDiscount";
+import Link from "next/link";
+import ProductSuggestion from "@/src/components/PageComponents/ProductDetails/ProductSuggestion";
 
 export default async function ProductDetailsPage({
   params,
@@ -16,15 +20,12 @@ export default async function ProductDetailsPage({
   productId: string;
 }) {
   const { data } = await getProduct(params.productId);
-  const targetDate = new Date(data.createdAt);
-
-  // Format the date as "Month Day, Year"
-  const options = { year: "numeric", month: "long", day: "numeric" };
-  const formattedDate = targetDate.toLocaleDateString("en-US", options);
+  const { data: productSuggestedData } = await getSuggestedProduct(data.id);
   return (
     <>
       <div className="mt-[200px] min-h-screen ">
         <div className="flex gap-12 ">
+          {/* product view images */}
           <div>
             <div className="h-[530px] w-[530px]">
               <ProductPreviewImage initialPreview={data.images[0]} />
@@ -36,6 +37,7 @@ export default async function ProductDetailsPage({
             <h3 className="text-3xl font-semibold text-gray-800 mb-2">
               {data.name}
             </h3>
+            <p className="text-sm text-gray-700">{data.category?.name}</p>
             {/* Rating */}
             <Rating
               className="mt-2"
@@ -56,10 +58,13 @@ export default async function ProductDetailsPage({
                 <p className="mt-1 text-gray-800">{data.styleCode}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Release Date</p>
-                <p className="mt-1 text-gray-800">{formattedDate}</p>
+                <p className="text-sm text-gray-500">Price</p>
+                <p className="mt-1 text-gray-800">
+                  ৳{calculateDiscounnt(data.price, data.discount)}
+                </p>
               </div>
             </div>
+
             {/* Additional Information */}
             <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-10">
               <div>
@@ -79,118 +84,19 @@ export default async function ProductDetailsPage({
             {/* Shoe Size Selection */}
             <ProductSize />
 
+            {/* add to cart counter  */}
             <ProductCounter />
           </div>
         </div>
+
+        {/* description  */}
         <div>
           <h3 className="mt-20 text-2xl font-medium">Description</h3>
           <p className="mt-4">{data.description}</p>
         </div>
-        <div>
-          <h3 className="text-xl font-medium mt-8">You may also like</h3>
-          <div className="flex gap-4 mt-4 mb-10">
-            <div className="w-[220px] border p-2 rounded hover:shadow-lg bg-[#F7F7F7] transition duration-200">
-              <div className="  md:h-[200px] relative flex justify-center items-center">
-                <Image src={flash3} alt="banner 1" objectFit="cover" priority />
-              </div>
-              <p className="text-sm">
-                Jordan 4 Retro Mid Military Black Mid Military Black
-              </p>
-              <p className="flex gap-2 items-center mt-1 ">
-                <span className="text-[#F85606]">৳1,000</span>
-                <span className="text-xs text-gray-500">-17%</span>
-              </p>
-              <div className="flex items-center gap-1 text-xs">
-                <Rating
-                  className="mt-1"
-                  style={{ maxWidth: 70 }}
-                  value={3}
-                  readOnly
-                />
-              </div>
-            </div>
-            <div className="w-[220px] border p-2 rounded hover:shadow-lg bg-[#F7F7F7] transition duration-200">
-              <div className="  md:h-[200px] relative flex justify-center items-center">
-                <Image src={flash3} alt="banner 1" objectFit="cover" priority />
-              </div>
-              <p className="text-sm">
-                Jordan 4 Retro Mid Military Black Mid Military Black
-              </p>
-              <p className="flex gap-2 items-center mt-1 ">
-                <span className="text-[#F85606]">৳1,000</span>
-                <span className="text-xs text-gray-500">-17%</span>
-              </p>
-              <div className="flex items-center gap-1 text-xs">
-                <Rating
-                  className="mt-1"
-                  style={{ maxWidth: 70 }}
-                  value={3}
-                  readOnly
-                />
-              </div>
-            </div>
-            <div className="w-[220px] border p-2 rounded hover:shadow-lg bg-[#F7F7F7] transition duration-200">
-              <div className="  md:h-[200px] relative flex justify-center items-center">
-                <Image src={flash3} alt="banner 1" objectFit="cover" priority />
-              </div>
-              <p className="text-sm">
-                Jordan 4 Retro Mid Military Black Mid Military Black
-              </p>
-              <p className="flex gap-2 items-center mt-1 ">
-                <span className="text-[#F85606]">৳1,000</span>
-                <span className="text-xs text-gray-500">-17%</span>
-              </p>
-              <div className="flex items-center gap-1 text-xs">
-                <Rating
-                  className="mt-1"
-                  style={{ maxWidth: 70 }}
-                  value={3}
-                  readOnly
-                />
-              </div>
-            </div>
-            <div className="w-[220px] border p-2 rounded hover:shadow-lg bg-[#F7F7F7] transition duration-200">
-              <div className="  md:h-[200px] relative flex justify-center items-center">
-                <Image src={flash3} alt="banner 1" objectFit="cover" priority />
-              </div>
-              <p className="text-sm">
-                Jordan 4 Retro Mid Military Black Mid Military Black
-              </p>
-              <p className="flex gap-2 items-center mt-1 ">
-                <span className="text-[#F85606]">৳1,000</span>
-                <span className="text-xs text-gray-500">-17%</span>
-              </p>
-              <div className="flex items-center gap-1 text-xs">
-                <Rating
-                  className="mt-1"
-                  style={{ maxWidth: 70 }}
-                  value={3}
-                  readOnly
-                />
-              </div>
-            </div>
-            <div className="w-[220px] border p-2 rounded hover:shadow-lg bg-[#F7F7F7] transition duration-200">
-              <div className="  md:h-[200px] relative flex justify-center items-center">
-                <Image src={flash3} alt="banner 1" objectFit="cover" priority />
-              </div>
-              <p className="text-sm">
-                Jordan 4 Retro Mid Military Black Mid Military Black
-              </p>
-              <p className="flex gap-2 items-center mt-1 ">
-                <span className="text-[#F85606]">৳1,000</span>
-                <span className="text-xs text-gray-500">-17%</span>
-              </p>
-              <div className="flex items-center gap-1 text-xs">
-                <Rating
-                  className="mt-1"
-                  style={{ maxWidth: 70 }}
-                  value={3}
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+
+        {/* products suggestion */}
+        <ProductSuggestion productSuggestedData={productSuggestedData} />
       </div>
     </>
   );

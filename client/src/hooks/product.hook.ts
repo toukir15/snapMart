@@ -1,10 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { getFlashSaleProducts, getProducts } from "../services/product/query";
+import { getFlashSaleProducts } from "../services/product/query";
+import { getProducts } from "../services/product/serverQuery";
+import { IProductsProps } from "../types/api/product";
 
-export const useGetProducts = () => {
+export const useGetProducts = ({ brand, category }: IProductsProps) => {
+  console.log({ brand, category });
   return useQuery({
-    queryKey: ["PRODUCT"],
-    queryFn: () => getProducts(),
+    queryKey: ["PRODUCTS", brand, category],
+    queryFn: () => getProducts({ brand, category }),
   });
 };
 

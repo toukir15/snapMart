@@ -12,6 +12,10 @@ export interface IProductProviderValues {
   productStates: {
     selectedProductPreview: string;
     setSelectedProductPreview: Dispatch<SetStateAction<string>>;
+    brand: string;
+    setBrand: Dispatch<SetStateAction<string>>;
+    category: string;
+    setCategory: Dispatch<SetStateAction<string>>;
   };
 }
 
@@ -24,6 +28,8 @@ export const ProductContext = createContext<IProductProviderValues | undefined>(
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProductPreview, setSelectedProductPreview] =
     useState<string>("");
+  const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
 
   return (
     <ProductContext.Provider
@@ -31,6 +37,10 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         productStates: {
           selectedProductPreview,
           setSelectedProductPreview,
+          brand,
+          setBrand,
+          category,
+          setCategory,
         },
       }}
     >
