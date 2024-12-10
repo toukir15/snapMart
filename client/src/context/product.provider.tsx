@@ -16,6 +16,8 @@ export interface IProductProviderValues {
     setBrand: Dispatch<SetStateAction<string>>;
     category: string;
     setCategory: Dispatch<SetStateAction<string>>;
+    searchTerm: string;
+    setSearchTerm: Dispatch<SetStateAction<string>>;
   };
 }
 
@@ -29,6 +31,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [selectedProductPreview, setSelectedProductPreview] =
     useState<string>("");
   const [category, setCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [brand, setBrand] = useState("");
 
   return (
@@ -41,6 +44,8 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
           setBrand,
           category,
           setCategory,
+          searchTerm,
+          setSearchTerm,
         },
       }}
     >

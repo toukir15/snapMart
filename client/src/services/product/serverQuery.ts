@@ -11,11 +11,15 @@ export const createPayment = async () => {
   }
 };
 
-export const getProducts = async ({ brand, category }: IProductsProps) => {
-  console.log({ brand, category });
+export const getProducts = async ({
+  brand,
+  category,
+  searchTerm,
+}: IProductsProps) => {
+  console.log({ brand, category, searchTerm });
   try {
     const { data } = await axiosInstance.get(
-      `/product?category=${category}&brand=${brand}`
+      `/product?category=${category}&brand=${brand}&searchTerm=${searchTerm}`
     );
     return { data };
   } catch (error: any) {

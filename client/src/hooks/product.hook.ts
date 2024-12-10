@@ -3,11 +3,14 @@ import { getFlashSaleProducts } from "../services/product/query";
 import { getProducts } from "../services/product/serverQuery";
 import { IProductsProps } from "../types/api/product";
 
-export const useGetProducts = ({ brand, category }: IProductsProps) => {
-  console.log({ brand, category });
+export const useGetProducts = ({
+  brand,
+  category,
+  searchTerm,
+}: IProductsProps) => {
   return useQuery({
-    queryKey: ["PRODUCTS", brand, category],
-    queryFn: () => getProducts({ brand, category }),
+    queryKey: ["PRODUCTS", brand, category, searchTerm],
+    queryFn: () => getProducts({ brand, category, searchTerm }),
   });
 };
 

@@ -1,4 +1,5 @@
 "use client";
+import React, { useContext, useState } from "react";
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -12,22 +13,44 @@ import { Link } from "@nextui-org/link";
 import { Input } from "@nextui-org/input";
 import NextLink from "next/link";
 import { LuShoppingCart } from "react-icons/lu";
-
-import { siteConfig } from "@/src/config/site";
 import { SearchIcon, Logo } from "@/src/components/icons";
-import { useState } from "react";
+import {
+  IProductProviderValues,
+  ProductContext,
+} from "../context/product.provider";
 
 export const Navbar = () => {
-  const [cartCount, setCartCount] = useState(5); // Example product count
+  const [cartCount, setCartCount] = useState(5);
+  const { productStates } = useContext(
+    ProductContext
+  ) as IProductProviderValues;
+  const { setSearchTerm, searchTerm } = productStates;
+  const handleSearchKeyPress = (e) => {
+    if (e.key === "Enter") {
+      setSearchTerm(e.target.value);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
+
+  const handleSearchOnChange = (e) => {
+    if (e.target.value == "") {
+      setSearchTerm("");
+    }
+  };
 
   const searchInput = (
     <Input
-      aria-label="Search"
+      onKeyDown={handleSearchKeyPress}
+      // defaultValue={postStates.searchTerm}
+      onClear={handleClearSearch}
+      onChange={handleSearchOnChange}
       classNames={{
         inputWrapper: "bg-default-100",
         input: "text-sm w-80",
       }}
-      labelPlacement="outside"
       placeholder="Search..."
       startContent={
         <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
@@ -65,22 +88,6 @@ export const Navbar = () => {
                   </p>
                 </NextLink>
               </NavbarBrand>
-              {/* <ul className="hidden lg:flex gap-4 justify-start ml-2">
-                {siteConfig.navItems.map((item) => (
-                  <NavbarItem key={item.href}>
-                    <NextLink
-                      className={clsx(
-                        linkStyles({ color: "foreground" }),
-                        "data-[active=true]:text-primary data-[active=true]:font-medium"
-                      )}
-                      color="foreground"
-                      href={item.href}
-                    >
-                      {item.label}
-                    </NextLink>
-                  </NavbarItem>
-                ))}
-              </ul> */}
             </NavbarContent>
 
             <NavbarContent
@@ -89,12 +96,14 @@ export const Navbar = () => {
             >
               <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
               <NavbarItem className="hidden lg:flex relative">
-                <LuShoppingCart className="text-[24px] text-white cursor-pointer" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-white text-orange-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
+                <Link href={"/cart/dsf"}>
+                  <LuShoppingCart className="text-[24px] text-white cursor-pointer" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-white text-orange-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
               </NavbarItem>
             </NavbarContent>
 
@@ -104,25 +113,9 @@ export const Navbar = () => {
 
             <NavbarMenu>
               {searchInput}
-              <div className="mx-4 mt-2 flex flex-col gap-2">
-                {siteConfig.navMenuItems.map((item, index) => (
-                  <NavbarMenuItem key={`${item}-${index}`}>
-                    <Link
-                      color={
-                        index === 2
-                          ? "primary"
-                          : index === siteConfig.navMenuItems.length - 1
-                            ? "danger"
-                            : "foreground"
-                      }
-                      href="#"
-                      size="lg"
-                    >
-                      {item.label}
-                    </Link>
-                  </NavbarMenuItem>
-                ))}
-              </div>
+              <button onClick={handleSearchKeyPress} className="mt-4">
+                Search
+              </button>
             </NavbarMenu>
           </NextUINavbar>
         </div>
