@@ -9,7 +9,7 @@ const router = express.Router();
 router.post(
   "/",
   auth(UserRole.VENDOR),
-  multerUpload.array("files"),
+  multerUpload.array("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
     return ProductController.createProduct(req, res, next);
@@ -18,25 +18,21 @@ router.post(
 
 router.get(
   "/",
-  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
   ProductController.getProducts
 );
 
 router.get(
   "/flash-sale",
-  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
   ProductController.getFlashSaleProducts
 );
 
 router.get(
   "/brand",
-  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
   ProductController.getBrands
 );
 
 router.get(
   "/suggested/:productId",
-  auth(UserRole.VENDOR, UserRole.ADMIN, UserRole.CUSTOMER),
   ProductController.getSuggestedProducts
 );
 

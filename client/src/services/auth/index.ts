@@ -1,8 +1,11 @@
-// "use server";
+"use server";
 // import axiosInstance from "@/src/lib/axiosInstance";
-// import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 // import { cookies } from "next/headers";
 // import { FieldValues } from "react-hook-form";
+
+import axiosInstance from "@/src/lib/axiosInstance";
+import { cookies } from "next/headers";
 
 // export const userRegister = async (userData: FieldValues) => {
 //   try {
@@ -13,20 +16,19 @@
 //   }
 // };
 
-// export const userLogin = async (userData: FieldValues) => {
-//   try {
-//     const { data } = await axiosInstance.post("/auth/login", userData);
+export const userLogin = async (userData: any) => {
+    try {
+        const { data } = await axiosInstance.post("/auth/login", userData);
 
-//     if (data.success) {
-//       cookies().set("accessToken", data?.data?.accessToken);
-//       cookies().set("refreshToken", data?.data?.refreshToken);
-//     }
+        if (data.success) {
+            cookies().set("accessToken", data?.data?.accessToken);
+        }
 
-//     return data.data;
-//   } catch (error: any) {
-//     throw new Error(error);
-//   }
-// };
+        return data.data;
+    } catch (error: any) {
+        throw new Error(error.status);
+    }
+};
 
 // export const refreshToken = async () => {
 //   try {
@@ -108,23 +110,22 @@
 //   }
 // };
 
-// export const getCurrentUser = async () => {
-//   const accessToken = cookies().get("accessToken")?.value;
-//   let decodedToken = null;
-//   if (accessToken) {
-//     decodedToken = await jwtDecode(accessToken);
-//   }
+export const getCurrentUser = async () => {
+    const accessToken = cookies().get("accessToken")?.value;
+    let decodedToken = null;
+    if (accessToken) {
+        decodedToken = await jwtDecode(accessToken);
+    }
 
-//   const decodedUser = {
-//     _id: decodedToken?._id,
-//     name: decodedToken?.name,
-//     role: decodedToken?.role,
-//     email: decodedToken?.email,
-//     profilePhoto: decodedToken?.profilePhoto,
-//     isVerified: decodedToken?.isVerified,
-//   };
-//   return decodedUser;
-// };
+    const decodedUser = {
+        id: decodedToken?.id,
+        name: decodedToken?.name,
+        role: decodedToken?.role,
+        email: decodedToken?.email,
+        profilePhoto: decodedToken?.profilePhoto,
+    };
+    return decodedUser;
+};
 
 // export const logout = () => {
 //   cookies().delete("accessToken");

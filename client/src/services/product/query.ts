@@ -1,3 +1,6 @@
+import { revalidateTag } from "next/cache";
+
+
 export const getProducts = async () => {
   try {
     const fetchOption = {
@@ -39,7 +42,7 @@ export const getProduct = async (id: string) => {
       "Content-Type": "application/json",
     },
   };
-
+  revalidateTag("product")
   const res = await fetch(
     `http://localhost:5000/api/v1/product/${id}`,
     fetchOption
@@ -53,14 +56,13 @@ export const getProduct = async (id: string) => {
 };
 
 export const getFlashSaleProducts = async () => {
+  // const accessToken = cookies().get("accessToken")?.value;
+  // console.log({a})
+
   try {
     const fetchOption = {
       next: {
         tags: ["flash_sale"],
-      },
-      headers: {
-        Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzM2NTU1OTAsImV4cCI6MTczNDI2MDM5MH0.2wQUBf8jALe7IlaAGCYUCh_iRA3jWHJqPdBD0a5Ab5w`, // Replace with your actual token
-        "Content-Type": "application/json",
       },
     };
 
@@ -87,11 +89,7 @@ export const getBrands = async () => {
   try {
     const fetchOption = {
       next: {
-        tags: ["suggested_product"],
-      },
-      headers: {
-        Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzM2NTU1OTAsImV4cCI6MTczNDI2MDM5MH0.2wQUBf8jALe7IlaAGCYUCh_iRA3jWHJqPdBD0a5Ab5w`, // Replace with your actual token
-        "Content-Type": "application/json",
+        tags: ["brand"],
       },
     };
 
@@ -119,10 +117,6 @@ export const getSuggestedProduct = async (id: string) => {
     const fetchOption = {
       next: {
         tags: ["suggested_product"],
-      },
-      headers: {
-        Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzM2NTU1OTAsImV4cCI6MTczNDI2MDM5MH0.2wQUBf8jALe7IlaAGCYUCh_iRA3jWHJqPdBD0a5Ab5w`, // Replace with your actual token
-        "Content-Type": "application/json",
       },
     };
 

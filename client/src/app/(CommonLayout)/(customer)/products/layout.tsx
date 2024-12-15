@@ -15,12 +15,12 @@ export default async function Layout({
   return (
     <div className="min-h-screen mt-[120px] flex">
       {/* Sidebar */}
-      <div className="w-[250px] bg-[#F7F7F7] shadow-md p-4 overflow-y-auto mb-10">
+      <div className="w-[20%] bg-[#F7F7F7] shadow-md p-4 overflow-y-auto mb-10">
         <ProductSidebar categories={categories} brands={brands} />
       </div>
 
       {/* Content */}
-      <div className="flex-grow p-4">{children}</div>
+      <div className="flex-grow p-4 w-[80%]">{children}</div>
     </div>
   );
 }

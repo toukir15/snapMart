@@ -1,18 +1,16 @@
 import React from "react";
 import "react-inner-image-zoom/lib/InnerImageZoom/styles.css";
-import flash3 from "../../../../../../public/flashSale/flash2.png";
 
-import Image from "next/image";
 import { Rating } from "@smastrom/react-rating";
 import { getProduct, getSuggestedProduct } from "@/src/services/product/query";
 import ProductPreviewImage from "@/src/components/PageComponents/ProductDetails/ProductPreviewImage";
 import ProductPreviewImageSlider from "@/src/components/PageComponents/ProductDetails/ProductPreviewImageSlider";
 import ProductSize from "@/src/components/PageComponents/ProductDetails/ProductSize";
 import ProductCounter from "@/src/components/PageComponents/ProductDetails/ProductCounter";
-import { IProduct } from "@/src/types/product";
 import { calculateDiscounnt } from "@/src/utils/calculateDiscount";
-import Link from "next/link";
 import ProductSuggestion from "@/src/components/PageComponents/ProductDetails/ProductSuggestion";
+import AdditionalInformation from "@/src/components/PageComponents/ProductDetails/AdditionalInformation";
+import ProductDetails from "@/src/components/PageComponents/ProductDetails/ProductDetails";
 
 export default async function ProductDetailsPage({
   params,
@@ -48,44 +46,16 @@ export default async function ProductDetailsPage({
             {/* Section Title */}
             <h3 className="text-2xl font-medium text-gray-700 mt-6">Details</h3>
             {/* Product Details */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-10">
-              <div>
-                <p className="text-sm text-gray-500">Colorway</p>
-                <p className="mt-1 text-gray-800">{data.color}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Style Code</p>
-                <p className="mt-1 text-gray-800">{data.styleCode}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Price</p>
-                <p className="mt-1 text-gray-800">
-                  ৳{calculateDiscounnt(data.price, data.discount)}
-                </p>
-              </div>
-            </div>
+            <ProductDetails data={data} />
 
             {/* Additional Information */}
-            <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-10">
-              <div>
-                <p className="text-sm text-gray-500">Department</p>
-                <p className="mt-1 text-gray-800">{data.department}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Brand</p>
-                <p className="mt-1 text-gray-800">{data.brand}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Model</p>
-                <p className="mt-1 text-gray-800">{data.model}</p>
-              </div>
-            </div>
+            <AdditionalInformation data={data} />
 
             {/* Shoe Size Selection */}
             <ProductSize />
 
             {/* add to cart counter  */}
-            <ProductCounter />
+            <ProductCounter data={data} />
           </div>
         </div>
 

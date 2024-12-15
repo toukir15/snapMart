@@ -10,6 +10,9 @@
 //   userRegister,
 // } from "../services/auth";
 
+import { useMutation } from "@tanstack/react-query";
+import { userLogin } from "../services/auth";
+
 // export const useUserRegister = () => {
 //   return useMutation<any, Error, FieldValues>({
 //     mutationKey: ["REGISTER"],
@@ -17,12 +20,12 @@
 //   });
 // };
 
-// export const useUserLogin = () => {
-//   return useMutation<any, Error, FieldValues>({
-//     mutationKey: ["LOGIN"],
-//     mutationFn: async (data) => await userLogin(data),
-//   });
-// };
+export const useUserLogin = () => {
+    return useMutation<any, Error, any>({
+        mutationKey: ["LOGIN"],
+        mutationFn: async (data) => await userLogin(data),
+    });
+};
 
 // export const useRefreshToken = () => {
 //   return useMutation({

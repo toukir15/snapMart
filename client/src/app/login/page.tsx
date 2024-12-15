@@ -1,22 +1,43 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@nextui-org/button";
-import { useRouter } from "next/navigation";
 import { Input } from "@nextui-org/input";
 import logo from "../../../public/logo.png";
+import { useUserLogin } from "@/src/hooks/auth.hook";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState<string>(""); // Email state
-  const [password, setPassword] = useState<string>(""); // Password state
-  const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const { mutate: handleLogin, error, isSuccess, } = useUserLogin()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Incorrect Credential!", { duration: 2000 })
+    }
+  }, [error])
+
+  useEffect(() => {
+    if (isSuccess) {
+      router.push("/");
+      toast.error("Login Successfully!", { duration: 2000 })
+    }
+  }, [isSuccess])
+
+
 
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Redirect after successful login
-    router.push("/user/home"); // You can update this based on your routes
+
+    const loginData = {
+      email, password
+    }
+    handleLogin(loginData)
   };
 
   return (

@@ -254,10 +254,11 @@ const createProduct = async (req: Request) => {
     ...req.body,
     images: productImages,
   };
-
+  console.log(productData)
   const result = await prisma.product.create({
     data: productData,
   });
+  console.log(result)
   return result;
 };
 

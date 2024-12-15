@@ -22,19 +22,13 @@ const loginUser = async (payload: { email: string; password: string }) => {
     throw new Error("Password incorrect!");
   }
   const accessToken = jwtHelpers.generateToken(
-    {
-      email: userData.email,
-      role: userData.role,
-    },
+    userData,
     config.jwt.jwt_access_secret as Secret,
     config.jwt.jwt_access_expires_in as string
   );
 
   const refreshToken = jwtHelpers.generateToken(
-    {
-      email: userData.email,
-      role: userData.role,
-    },
+    userData,
     config.jwt.jwt_refresh_secret as Secret,
     config.jwt.jwt_refresh_expires_in as string
   );

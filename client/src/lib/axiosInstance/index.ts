@@ -10,8 +10,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   function (config) {
     const accessToken = cookies().get("accessToken")?.value;
-    config.headers.Authorization =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluMUBnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJpYXQiOjE3MzM2MzkxOTgsImV4cCI6MTczNDI0Mzk5OH0.tzoS5hekFmSF7vOmZBOVVaS8l3xIimMLUByw06H5HI4";
+    config.headers.Authorization = accessToken;
     return config;
   },
   function (error) {

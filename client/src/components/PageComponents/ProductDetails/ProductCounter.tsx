@@ -1,35 +1,56 @@
 "use client";
+import { useCreateCart } from "@/src/hooks/cart.hook";
 import { Button } from "@nextui-org/button";
 import React, { useState } from "react";
 import { FiMinus } from "react-icons/fi";
 import { GoPlus } from "react-icons/go";
 
-export default function ProductCounter() {
+export default function ProductCounter({
+  data,
+}: {
+  data: any;
+}) {
   const [counter, setCounter] = useState(1);
+  const { inventoryCount } = data
+  const { mutate: handleCreateCart } = useCreateCart()
+  const handleAddToCart = (data: any) => {
+
+    const addToCartData = {
+      cart: {
+        shopId: data.shopId
+      },
+      cartItem: {
+        productId: data.id,
+        quantity: counter
+      }
+    }
+    handleCreateCart(addToCartData)
+  }
+
   return (
     <div>
       <div className="flex mt-4 lg:mt-12 gap-4 lg:gap-6">
-        <div className="flex gap-4 border py-2 lg:py-2 justify-between px-4 lg:w-[19%] text-xl ">
+        <div className="flex gap-4 border py-2 lg:py-2 justify-between px-4 lg:w-[30%] text-xl ">
           <button
             disabled={counter <= 1}
             onClick={() => setCounter(counter - 1)}
-            className={`${
-              counter <= 1
-                ? "text-orange-200"
-                : "text-orange-500 hover:text-orange-600"
-            }  transition duration-100 pr-1`}
+            className={`${counter <= 1
+              ? "text-orange-200"
+              : "text-orange-500 hover:text-orange-600"
+              }  transition duration-100 pr-1`}
           >
             <FiMinus />
           </button>
           <p>{counter}</p>
           <button
-            disabled={counter == 10 || 10 - counter === 0}
+            disabled={
+              counter == inventoryCount || inventoryCount - counter === 0
+            }
             onClick={() => setCounter(counter + 1)}
-            className={` ${
-              counter == 10 || 10 - counter === 0
-                ? "text-orange-200"
-                : "text-orange-500 hover:text-orange-600"
-            }  transition duration-100 pl-1`}
+            className={` ${counter == inventoryCount || inventoryCount - counter === 0
+              ? "text-orange-200"
+              : "text-orange-500 hover:text-orange-600"
+              }  transition duration-100 pl-1`}
           >
             <GoPlus />
           </button>
@@ -37,9 +58,9 @@ export default function ProductCounter() {
         <Button
           size="lg"
           radius="none"
-          // onClick={() => handleAddToCart(productData?.data._id)}
-          className="px-4 w-[50%] bg-orange-500 transition duration-150 text-black font-medium flex justify-center items-center"
-          //   disabled={!selectedSize}s
+          onClick={() => handleAddToCart(data)}
+          className="px-4 w-[50%] bg-orange-500 transition duration-150 text-white font-medium flex justify-center items-center"
+        //   disabled={!selectedSize}s
         >
           Add to Cart
         </Button>

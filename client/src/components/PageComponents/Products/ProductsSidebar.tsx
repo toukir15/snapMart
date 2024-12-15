@@ -6,6 +6,7 @@ import {
   IProductProviderValues,
   ProductContext,
 } from "@/src/context/product.provider";
+import { Button } from "antd";
 export const ProductSidebar = ({
   categories,
   brands,
@@ -17,11 +18,40 @@ export const ProductSidebar = ({
     ProductContext
   ) as IProductProviderValues;
 
-  const { brand, category, setBrand, setCategory } = productStates;
+  const {
+    brand,
+    category,
+    searchTerm,
+    minPrice,
+    maxPrice,
+    setBrand,
+    setCategory,
+    setSearchTerm,
+    setMinPrice,
+    setMaxPrice,
+  } = productStates;
+
+  const handleClearFilter = () => {
+    setBrand("");
+    setCategory("");
+    setSearchTerm("");
+    setMinPrice(0);
+    setMaxPrice(0);
+  };
+
+  const checkUseFilter =
+    !!brand || !!category || !!searchTerm || !!minPrice || !!maxPrice;
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">Filters</h2>
+        {checkUseFilter && (
+          <Button onClick={handleClearFilter} color="danger" variant="solid">
+            Clear
+          </Button>
+        )}
+      </div>
       <FilterGroup
         selectedOption={category}
         setSelectedOption={setCategory}

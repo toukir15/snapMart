@@ -24,8 +24,8 @@ export const Navbar = () => {
   const { productStates } = useContext(
     ProductContext
   ) as IProductProviderValues;
-  const { setSearchTerm, searchTerm } = productStates;
-  const handleSearchKeyPress = (e) => {
+  const { setSearchTerm } = productStates;
+  const handleSearchKeyPress = (e: any) => {
     if (e.key === "Enter") {
       setSearchTerm(e.target.value);
     }
@@ -35,7 +35,7 @@ export const Navbar = () => {
     setSearchTerm("");
   };
 
-  const handleSearchOnChange = (e) => {
+  const handleSearchOnChange = (e: any) => {
     if (e.target.value == "") {
       setSearchTerm("");
     }

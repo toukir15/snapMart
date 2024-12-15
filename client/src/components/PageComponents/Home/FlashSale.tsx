@@ -20,21 +20,21 @@ export default async function FlashSale() {
             </Button>
           </Link>
         </div>
-        <div className="flex ">
-          {data?.map((product: IProduct) => {
+        <div className="grid grid-cols-6 ">
+          {data?.slice(0, 6).map((product: IProduct) => {
             const { name, price, discount, images } = product;
             const dicountPrice = calculateDiscounnt(price, discount);
             return (
               <Link
                 href={`/product-details/${product.id}`}
-                className="w-[220px] border p-2 rounded hover:shadow-lg transition duration-200"
+                className="w-[210px] border p-4 rounded hover:shadow-lg transition duration-200"
               >
-                <div className="  md:h-[200px] relative flex justify-center items-center">
+                <div className="  md:h-[200px] w-[200px] relative flex items-center">
                   <Image
                     src={images[0]}
                     alt="banner 1"
-                    width={500}
-                    height={500}
+                    width={180}
+                    height={180}
                     objectFit="cover"
                     priority
                   />

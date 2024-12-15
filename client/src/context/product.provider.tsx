@@ -7,6 +7,7 @@ import {
   SetStateAction,
 } from "react";
 
+
 // Define the shape of the context values
 export interface IProductProviderValues {
   productStates: {
@@ -18,6 +19,14 @@ export interface IProductProviderValues {
     setCategory: Dispatch<SetStateAction<string>>;
     searchTerm: string;
     setSearchTerm: Dispatch<SetStateAction<string>>;
+    minPrice: number;
+    setMinPrice: Dispatch<SetStateAction<number>>;
+    maxPrice: number;
+    setMaxPrice: Dispatch<SetStateAction<number>>;
+    productPage: number;
+    setProductPage: Dispatch<SetStateAction<number>>;
+    cartQuantity: number;
+    setCartQuantity: Dispatch<SetStateAction<number>>;
   };
 }
 
@@ -33,6 +42,11 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [category, setCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [brand, setBrand] = useState("");
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [productPage, setProductPage] = useState(1);
+  const [cartQuantity, setCartQuantity] = useState(0);
+
 
   return (
     <ProductContext.Provider
@@ -46,6 +60,14 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
           setCategory,
           searchTerm,
           setSearchTerm,
+          minPrice,
+          setMinPrice,
+          maxPrice,
+          setMaxPrice,
+          productPage,
+          setProductPage,
+          cartQuantity,
+          setCartQuantity
         },
       }}
     >

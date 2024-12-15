@@ -20,9 +20,16 @@ const createAdmin = async (req: Request): Promise<Admin> => {
   const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
   const userData = {
+    name: req.body.admin.name,
     email: req.body.admin.email,
     password: hashedPassword,
     role: UserRole.ADMIN,
+    profilePhoto: file.path
+  };
+
+  const data = {
+    ...req.body.admin,
+    profilePhoto: file.path,
   };
 
   const result = await prisma.$transaction(async (transactionClient) => {
@@ -30,13 +37,9 @@ const createAdmin = async (req: Request): Promise<Admin> => {
       data: userData,
     });
 
-    const adminData = {
-      ...req.body.admin,
-      profilePhoto: file.path,
-    };
 
     const createdAdminData = await transactionClient.admin.create({
-      data: adminData,
+      data: data,
     });
 
     return createdAdminData;
@@ -50,9 +53,11 @@ const createVendor = async (req: Request) => {
   const hashedPassword: string = await bcrypt.hash(req.body.password, 12);
 
   const userData = {
+    name: req.body.vendor.name,
     email: req.body.vendor.email,
     password: hashedPassword,
     role: UserRole.VENDOR,
+    profilePhoto: file.path
   };
 
   const result = await prisma.$transaction(async (transactionClient) => {
@@ -80,9 +85,11 @@ const createCustomer = async (req: Request) => {
   const hashedPassword: string = await bcrypt.hash(req.body.password, 12);
 
   const userData = {
+    name: req.body.customer.name,
     email: req.body.customer.email,
     password: hashedPassword,
     role: UserRole.CUSTOMER,
+    profilePhoto: file.path
   };
 
   const result = await prisma.$transaction(async (transactionClient) => {

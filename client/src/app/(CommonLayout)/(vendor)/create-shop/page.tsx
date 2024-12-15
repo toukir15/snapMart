@@ -1,44 +1,69 @@
 "use client";
 import React, { useState } from "react";
-import Image from "next/image";
+import { useForm, Controller } from "react-hook-form";
 import { Button } from "@nextui-org/button";
 import { Input, Textarea } from "@nextui-org/input";
+import { IoCloseSharp } from "react-icons/io5";
+
+// Image Preview Interface
+interface ImagePreview {
+  file: File;
+  preview: string;
+}
 
 export default function CreateShopPage() {
-  const [shopName, setShopName] = useState<string>(""); // Shop name state
-  const [shopLogo, setShopLogo] = useState<File | null>(null); // Shop logo state
-  const [description, setDescription] = useState<string>(""); // Shop description state
+  // State for image preview
+  const [imagePreview, setImagePreview] = useState<ImagePreview | null>(null);
 
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setShopLogo(e.target.files[0]);
+  // React Hook Form setup
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm();
+
+  // Form submission handler
+  const onSubmit = async (data) => {
+    // Create FormData for file uploads
+    const formData = new FormData();
+    formData.append("shopName", data.shopName);
+    formData.append("description", data.description || "");
+
+    // Add single file to FormData if exists
+    if (imagePreview) {
+      formData.append("shopLogo", imagePreview.file);
+    }
+
+    // TODO: Implement actual API call
+    console.log("Form submitted", formData);
+  };
+
+  // Image handling function
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Replace any existing preview with the new image
+        setImagePreview({
+          file,
+          preview: reader.result as string,
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("shopName", shopName);
-    if (shopLogo) formData.append("shopLogo", shopLogo);
-    formData.append("description", description);
-
-    // Example API call (adjust based on your backend)
-    fetch("/api/shop", {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert("Shop created successfully!");
-      })
-      .catch((error) => {
-        console.error("Error creating shop:", error);
-      });
+  // Remove image from preview
+  const removeImage = () => {
+    setImagePreview(null);
   };
 
   return (
-    <div className="h-screen flex justify-center items-center bg-gradient-to-br from-gray-100 to-gray-300">
-      <form onSubmit={handleSubmit}>
+    <div className="h-screen flex justify-center items-center">
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white w-[400px] xl:w-[600px] shadow-2xl rounded-2xl p-8 xl:px-12 py-20 flex flex-col items-center relative">
           {/* Decorative Gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#cb4c11] via-[#fc69256a] to-[#ff5100] opacity-10 blur-lg rounded-2xl"></div>
@@ -49,59 +74,72 @@ export default function CreateShopPage() {
 
           {/* Shop Name */}
           <div className="flex flex-col w-full xl:w-3/4 mb-6">
+
             <Input
+              {...register("brandName")}
               variant="bordered"
-              label="Shop Name"
+              label="Brand Name"
               type="text"
               radius="sm"
-              value={shopName}
-              onChange={(e) => setShopName(e.target.value)}
-              className="bg-gray-50 "
+              className="bg-gray-50"
+              color={errors.shopName ? "danger" : "default"}
+              // errorMessage={errors.shopName?.message}
               required
             />
           </div>
 
-          {/* Shop Logo */}
+          {/* Shop Logo / Image Upload */}
           <div className="flex flex-col w-full xl:w-3/4 mb-6">
-            <label className="text-sm font-medium text-gray-600 mb-2">
-              Shop Logo
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleLogoChange}
-              className="border border-gray-300 p-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
-            />
-            {shopLogo && (
-              <div className="mt-4 flex items-center">
-                <p className="text-sm text-gray-500 mr-4">Preview:</p>
-                <Image
-                  src={URL.createObjectURL(shopLogo)}
-                  alt="Shop Logo Preview"
-                  width={60}
-                  height={60}
-                  className="rounded-full shadow-md"
-                />
-              </div>
-            )}
+            <div className="space-y-4">
+              <Input
+                type="file"
+                accept="image/*"
+                fullWidth
+                onChange={handleImageChange}
+                variant="bordered"
+              />
+
+              {/* Single Image Preview */}
+              {imagePreview && (
+                <div className="relative group w-full max-w-[100px] mt-4">
+                  <img
+                    src={imagePreview.preview}
+                    alt="Shop Logo Preview"
+                    className="w-full h-20 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                  >
+                    <IoCloseSharp />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Shop Description */}
           <div className="flex flex-col w-full xl:w-3/4 mb-6">
-            <Textarea
-              variant="bordered"
-              label="Shop Description"
-              placeholder="Write a brief description of your shop"
-              radius="sm"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="bg-gray-50"
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  label="Description"
+                  fullWidth
+                  variant="bordered"
+                  color={errors.description ? "danger" : "default"}
+                />
+              )}
             />
           </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
+            isLoading={isSubmitting}
             className="w-full xl:w-3/4 py-3 bg-gradient-to-r from-[#F85606] to-[#ff2929] text-white rounded-xl font-bold shadow-md hover:scale-105 transform transition-transform duration-300"
           >
             Create Shop

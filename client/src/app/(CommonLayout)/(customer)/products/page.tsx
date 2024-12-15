@@ -1,4 +1,5 @@
 "use client";
+
 import {
   IProductProviderValues,
   ProductContext,
@@ -6,40 +7,59 @@ import {
 import { useGetProducts } from "@/src/hooks/product.hook";
 import { IProduct } from "@/src/types/product";
 import { calculateDiscounnt } from "@/src/utils/calculateDiscount";
+import { Button } from "@nextui-org/button";
 import Image from "next/image";
 import Link from "next/link";
-import React, { Suspense, useContext } from "react";
+import React, { Suspense, useContext, useEffect, useState } from "react";
 
-export default function page() {
+export default function Page() {
   const { productStates } = useContext(
     ProductContext
   ) as IProductProviderValues;
-  const { brand, category, searchTerm } = productStates;
-  const { data } = useGetProducts({ brand, category, searchTerm });
+
+  // Destructuring values from productStates
+  const {
+    brand,
+    category,
+    searchTerm,
+    minPrice,
+    maxPrice,
+    productPage,
+    setProductPage,
+  } = productStates;
+
+  // Fetching products using the custom hook
+  const { data } = useGetProducts({
+    brand,
+    category,
+    searchTerm,
+    minPrice,
+    maxPrice,
+    productPage,
+  });
+
+  // Extracting product data from API response
   const productsData = data?.data.data;
-  // const [isClient, setIsClient] = useState(false);
-  // useEffect(() => {
-  //   setIsClient(true);
-  // }, []);
-  // if (!isClient) {
-  //   return <div>Loading...</div>;
-  // }
+
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
-        <div className="flex flex-wrap ">
+        {/* Products Grid */}
+        <div className="flex flex-wrap mt-4 ml-4">
           {productsData?.map((product: IProduct) => {
-            const { name, price, discount, images } = product;
-            const dicountPrice = calculateDiscounnt(price, discount);
+            const { id, name, price, discount, images } = product;
+            const discountPrice = calculateDiscounnt(price, discount);
+
             return (
               <Link
-                href={`/product-details/${product.id}`}
+                href={`/product-details/${id}`}
+                key={id}
                 className="w-[220px] border p-2 rounded hover:shadow-lg transition duration-200"
               >
-                <div className="  md:h-[200px] relative flex justify-center items-center">
+                <div className="md:h-[200px] relative flex justify-center items-center">
                   <Image
                     src={images[0]}
-                    alt="banner 1"
+                    alt={name}
                     width={500}
                     height={500}
                     objectFit="cover"
@@ -48,10 +68,10 @@ export default function page() {
                 </div>
                 <p className="text-sm">{name}</p>
                 <p className="flex items-center text-[#F85606]">
-                  ৳{dicountPrice}
+                  ৳{discountPrice}
                 </p>
                 <div className="flex items-center gap-1 text-xs">
-                  <p className="flex items-center  line-through text-[#9a9a9a]">
+                  <p className="flex items-center line-through text-[#9a9a9a]">
                     ৳{price}
                   </p>
                   <p>-{discount}%</p>
@@ -60,6 +80,19 @@ export default function page() {
             );
           })}
         </div>
+
+        {/* Load More Button */}
+        {productsData?.length > 11 && (
+          <div className="flex justify-center items-center mt-8 pb-20">
+            <Button
+              onClick={() => setProductPage(productPage + 1)}
+              radius="none"
+              className="px-20 bg-[#F85606] text-white"
+            >
+              Load More
+            </Button>
+          </div>
+        )}
       </Suspense>
     </>
   );
